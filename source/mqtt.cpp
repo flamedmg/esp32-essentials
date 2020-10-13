@@ -82,6 +82,9 @@ struct Mqtt::Private {
 
   std::string makeTopic(std::string_view topic) {
     if (topicsPrefix.empty()) return std::string(topic);
+    if (topicsPrefix.length() > 0 && topicsPrefix[0] == '/') {
+      return topicsPrefix.substr(1, topicsPrefix.length() - 2);
+    }
 
     std::string topicWithPrefix = topicsPrefix;
     topicWithPrefix += "/";
