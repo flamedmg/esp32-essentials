@@ -65,6 +65,7 @@ struct Mqtt::Private {
     std::string_view topic, Qos qos, std::function<void(std::string_view)> reaction) {
     std::string prefixedTopic = makeTopic(topic);
     if (isConnected) {
+      ESP_LOGI("mqtt","Subscribing to the topic: %s", prefixedTopic.c_str());
       esp_mqtt_client_subscribe(client, prefixedTopic.c_str(), int(qos));
     }
     auto subscription = std::make_unique<Subscription>();
@@ -82,8 +83,9 @@ struct Mqtt::Private {
 
   std::string makeTopic(std::string_view topic) {
     if (topicsPrefix.empty()) return std::string(topic);
-    if (topicsPrefix.length() > 0 && topicsPrefix[0] == '/') {
-      return topicsPrefix.substr(1, topicsPrefix.length() - 2);
+    if (!topic.empty() && topic[0] == '/') {
+      auto newTopic = topic.substr(1, topic.length() - 2);
+      return newTopic.data();
     }
 
     std::string topicWithPrefix = topicsPrefix;
